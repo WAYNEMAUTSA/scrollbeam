@@ -7,21 +7,140 @@
 <link rel="manifest" href="./manifest.json" />
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <style>
-  body { font-family: -apple-system, Roboto, Arial, sans-serif; background:#0f0f0f; color:#f1f1f1; margin:0; padding:24px; }
-  h1 { font-size:18px; }
-  label { display:block; margin-top:14px; font-size:13px; color:#ccc; }
-  input { width:100%; padding:10px; margin-top:4px; border-radius:8px; border:1px solid #333; background:#1c1c1c; color:white; box-sizing:border-box; font-size:14px; }
-  button { padding:12px 16px; margin-top:16px; border:none; border-radius:8px; background:#ff0033; color:white; font-weight:600; cursor:pointer; font-size:14px; width:100%; }
-  button.secondary { background:#333; }
-  #status { margin-top:20px; font-size:15px; text-align:center; padding:16px; border-radius:10px; background:#1c1c1c; }
-  a.edit { display:block; text-align:center; margin-top:20px; color:#888; font-size:12px; }
+  :root {
+    --bg: #000000;
+    --card: #161618;
+    --card-raised: #1f2023;
+    --accent: #ff3b30;
+    --text: #ffffff;
+    --text-dim: #8e8e93;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 20px 18px 40px;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+  }
+  .wordmark {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .icon-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--card-raised);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 0;
+  }
+  .icon-btn svg { width: 18px; height: 18px; }
+  .card {
+    background: var(--card);
+    border-radius: 22px;
+    padding: 18px;
+    margin-bottom: 12px;
+  }
+  .status-card {
+    padding: 26px 22px;
+    border-radius: 26px;
+  }
+  .status-card .eyebrow {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin: 0 0 6px;
+  }
+  .status-card .headline {
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.35;
+    margin: 0;
+  }
+  .scan-card { text-align: center; }
+  .scan-card p {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin: 10px 0 0;
+  }
+  label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin: 14px 0 6px;
+  }
+  input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid #2a2a2d;
+    background: #0d0d0e;
+    color: var(--text);
+    font-size: 14px;
+  }
+  button {
+    border: none;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100%;
+    padding: 15px;
+  }
+  button.primary {
+    background: var(--accent);
+    color: white;
+  }
+  button.secondary {
+    background: var(--card-raised);
+    color: var(--text);
+    margin-top: 10px;
+  }
+  video {
+    width: 100%;
+    border-radius: 18px;
+    margin-top: 12px;
+    display: none;
+  }
+  canvas { display: none; }
+  .manual-entry summary {
+    color: var(--text-dim);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px 0;
+  }
+  .pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+    margin-right: 8px;
+  }
 </style>
 </head>
 <body>
-<div id="app">Loading...</div>
+<div id="app"></div>
 
 <script>
 const CONFIG_KEY = "ytcontinue_config";
+
+const GEAR_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`;
+const CAMERA_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>`;
+const SWITCH_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>`;
 
 function getConfig() {
   try { return JSON.parse(localStorage.getItem(CONFIG_KEY) || "null"); }
@@ -109,9 +228,24 @@ function entryUrl(config) {
   return `${config.databaseURL.replace(/\/+$/, "")}/nowplaying/${config.secret}.json`;
 }
 
+function header(showSettings, onSettings) {
+  return `
+    <div class="header">
+      <p class="wordmark">ScrollBeam</p>
+      ${showSettings ? `<button class="icon-btn" id="headerSettingsBtn">${GEAR_ICON}</button>` : ""}
+    </div>
+  `;
+}
+
 async function handleShare(config, info) {
   const app = document.getElementById("app");
-  app.innerHTML = `<div id="status">Sending...</div>`;
+  app.innerHTML = `
+    ${header(false)}
+    <div class="card status-card">
+      <p class="eyebrow"><span class="pulse"></span>Sending</p>
+      <p class="headline">Beaming this over to your desktop...</p>
+    </div>
+  `;
 
   let title;
   if (info.platform === "youtube" && info.videoId) {
@@ -135,30 +269,54 @@ async function handleShare(config, info) {
       body: JSON.stringify(entry),
     });
     if (!res.ok) throw new Error("write failed");
-    document.getElementById("status").textContent = "Sent! Closing...";
-    setTimeout(() => window.close(), 800);
+    app.innerHTML = `
+      ${header(false)}
+      <div class="card status-card">
+        <p class="eyebrow"><span class="pulse"></span>Sent</p>
+        <p class="headline">${escapeHtml(title)}</p>
+      </div>
+    `;
+    setTimeout(() => window.close(), 900);
   } catch (e) {
-    document.getElementById("status").textContent =
-      "Could not reach your desktop's database. Check your phone has internet and that the settings were entered correctly (try re-scanning the QR code).";
+    app.innerHTML = `
+      ${header(false)}
+      <div class="card status-card">
+        <p class="eyebrow">Couldn't send</p>
+        <p class="headline">Check your phone has internet and your settings are correct. Try re-scanning the QR code.</p>
+      </div>
+    `;
   }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 function renderSettings(existing) {
   const app = document.getElementById("app");
   app.innerHTML = `
-    <h1>ScrollBeam - Setup</h1>
-    <button id="scanBtn">Scan QR code from desktop</button>
-    <video id="preview" style="width:100%;border-radius:8px;margin-top:10px;display:none;"></video>
-    <canvas id="canvas" style="display:none;"></canvas>
-    <button id="switchCamBtn" class="secondary" style="display:none;">Switch camera</button>
-    <div style="text-align:center;margin:12px 0;color:#666;font-size:12px;">or enter manually</div>
-    <label>Firebase Realtime Database URL</label>
-    <input id="dbUrl" value="${existing ? existing.databaseURL : ""}" placeholder="https://your-project-default-rtdb.firebaseio.com" />
-    <label>Secret room code (same one as your extension)</label>
-    <input id="secret" value="${existing ? existing.secret : ""}" />
-    <label>Expiry hours</label>
-    <input id="expiryHours" type="number" value="${existing ? existing.expiryHours : 6}" />
-    <button id="saveBtn">Save</button>
+    ${header(false)}
+    <div class="card scan-card">
+      <button class="icon-btn" id="scanBtn" style="margin: 0 auto;">${CAMERA_ICON}</button>
+      <p>Scan the QR code shown in your desktop extension's settings</p>
+      <video id="preview"></video>
+      <canvas id="canvas"></canvas>
+      <button class="icon-btn" id="switchCamBtn" style="display:none; margin: 10px auto 0;">${SWITCH_ICON}</button>
+    </div>
+    <div class="card manual-entry">
+      <details>
+        <summary>Enter details manually instead</summary>
+        <label>Firebase Realtime Database URL</label>
+        <input id="dbUrl" value="${existing ? existing.databaseURL : ""}" placeholder="https://your-project-default-rtdb.firebaseio.com" />
+        <label>Secret room code</label>
+        <input id="secret" value="${existing ? existing.secret : ""}" />
+        <label>Expiry hours</label>
+        <input id="expiryHours" type="number" value="${existing ? existing.expiryHours : 6}" />
+        <button class="primary" id="saveBtn" style="margin-top:16px;">Save</button>
+      </details>
+    </div>
   `;
 
   document.getElementById("saveBtn").addEventListener("click", () => {
@@ -207,7 +365,7 @@ async function startScan() {
   if (currentCameraIndex === -1) currentCameraIndex = 0;
 
   document.getElementById("switchCamBtn").style.display =
-    allBackCameras.length > 1 ? "block" : "none";
+    allBackCameras.length > 1 ? "flex" : "none";
 
   await openCamera();
 
@@ -269,12 +427,13 @@ function switchCamera() {
 function renderHome(config) {
   const app = document.getElementById("app");
   app.innerHTML = `
-    <h1>ScrollBeam</h1>
-    <div id="status">Ready. Share a YouTube, Instagram, or TikTok link to this app from the Share menu.</div>
-    <a class="edit" href="#" id="editLink">Edit settings</a>
+    ${header(true)}
+    <div class="card status-card">
+      <p class="eyebrow"><span class="pulse"></span>Ready</p>
+      <p class="headline">Share a YouTube, Instagram, or TikTok link here to beam it to your desktop.</p>
+    </div>
   `;
-  document.getElementById("editLink").addEventListener("click", (e) => {
-    e.preventDefault();
+  document.getElementById("headerSettingsBtn").addEventListener("click", () => {
     renderSettings(config);
   });
 }
@@ -294,8 +453,14 @@ function boot() {
     if (info) {
       handleShare(config, info);
     } else {
-      document.getElementById("app").innerHTML =
-        `<div id="status">That didn't look like a YouTube, Instagram, or TikTok link.</div>`;
+      document.getElementById("app").innerHTML = `
+        ${header(true)}
+        <div class="card status-card">
+          <p class="eyebrow">Not recognized</p>
+          <p class="headline">That didn't look like a YouTube, Instagram, or TikTok link.</p>
+        </div>
+      `;
+      document.getElementById("headerSettingsBtn").addEventListener("click", () => renderSettings(config));
     }
   } else {
     renderHome(config);
