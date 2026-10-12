@@ -1,18 +1,24 @@
-# YT Handoff
+# ScrollBeam
 
-Spotify lets you start a song on your phone and switch to your desktop mid-track without losing your place. YouTube doesn't. YT Handoff brings that same "continue on this device" experience to YouTube.
+Spotify lets you start a song on your phone and switch to your desktop mid-track without losing your place. ScrollBeam brings that same "continue on this device" experience to YouTube, Instagram, and TikTok.
 
-Share a video from your phone the normal way - it shows up as a notification on your computer. Click it, and it opens right where you left off, playlist and all.
+Share something from your phone the normal way - it shows up as a notification on your computer. Click it, and it opens right there on desktop.
 
 ## How it works
 
 1. A small browser extension on your computer watches for updates.
-2. A web app on your phone (installed like a normal app, shows up in the Share menu) sends the video, timestamp, and playlist info when you share.
+2. A web app on your phone (installed like a normal app, shows up in the Share menu) sends the link when you share.
 3. The two are connected through a small Firebase Realtime Database project that you own - nothing goes through a third-party server, and entries auto-expire after a few hours so nothing lingers.
+
+## What it supports
+
+- YouTube: resumes at the exact timestamp you were watching, and preserves playlist position when YouTube's own share sheet includes it (see KNOWN_LIMITATIONS.md for when it doesn't).
+- Instagram: opens the same Reel, post, or IGTV video on desktop.
+- TikTok: opens the same video on desktop.
 
 ## What gets stored
 
-Only: video ID, title, playlist ID/position, timestamp, and when it was shared. Nothing about your identity, and it lives in a database only you control.
+Only what's needed to open the content again: a link or video ID, a title, and when it was shared. Nothing about your identity, and it lives in a database only you control.
 
 ## Setup
 
