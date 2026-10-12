@@ -2,7 +2,7 @@
 
 This walks through getting YT Handoff running end to end: the desktop extension, your own free Firebase backend, and the Android phone app.
 
-> Video walkthrough: (coming soon - a full setup video will be linked here)
+
 
 Total time: about 15 minutes, most of it just clicking through Firebase's website.
 
@@ -45,7 +45,6 @@ Each user runs their own free Firebase project - this is what quietly connects y
    https://your-project-default-rtdb.firebaseio.com
    You'll need this in the next step.
 
-> Good moment to show on video: the Rules tab and pasting in the JSON above - this step trips people up the most.
 
 ---
 
@@ -70,14 +69,12 @@ A QR code will appear once you've saved - that's what you'll scan from your phon
 ## Part 3: Install the phone app (Android)
 
 1. On your phone, open Chrome and go to:
-   https://YOUR-USERNAME.github.io/yt-handoff/
+   https://YOUR-USERNAME.github.io/yt-handoff/sender
 2. Tap the menu (three dots) -> Add to Home screen (or Install app, if offered) -> confirm.
 3. Open the app from your home screen.
 4. Tap "Scan QR code from desktop", allow camera access, and point it at the QR code from Part 2.
    - If the picture looks warped/fisheye, tap "Switch camera" until it looks normal - it'll remember your choice after that.
 5. Once scanned, settings save automatically - no typing needed.
-
-> Good moment to show on video: tapping Add to Home screen, then the QR scan actually connecting.
 
 ---
 
@@ -89,8 +86,6 @@ A QR code will appear once you've saved - that's what you'll scan from your phon
 4. Tap "Send to Desktop" in the share sheet (you may need to scroll or tap "More").
 5. Within a couple of seconds, your computer should show a notification: "Continue watching on this device?"
 6. Click it - YouTube opens on your computer at the same spot, with the same playlist queued up if you were in one.
-
-> Good moment to show on video: the whole loop - tapping Share on the phone, then the notification popping up and being clicked on desktop.
 
 ---
 
