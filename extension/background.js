@@ -65,7 +65,7 @@ async function poll() {
     return;
   }
 
-  if (!entry || !entry.videoId) {
+  if (!entry || !(entry.videoId || entry.url)) {
     await chrome.storage.local.remove(["latestEntry"]);
     return;
   }

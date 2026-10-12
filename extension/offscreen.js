@@ -14,7 +14,7 @@ async function start() {
   currentEventSource.addEventListener("put", (e) => {
     try {
       const payload = JSON.parse(e.data);
-      if (payload && payload.data && payload.data.videoId) {
+      if (payload && payload.data && (payload.data.videoId || payload.data.url)) {
         chrome.runtime.sendMessage({ type: "nowplaying-live", entry: payload.data });
       }
     } catch (err) {
