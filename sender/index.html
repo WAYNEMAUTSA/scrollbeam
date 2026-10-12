@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Scroll Beam</title>
+<title>ScrollBeam</title>
 <link rel="manifest" href="./manifest.json" />
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <style>
@@ -74,12 +74,10 @@ function extractInstagramInfo(text) {
 function extractTikTokInfo(text) {
   const match = text.match(/https?:\/\/(?:www\.)?tiktok\.com\/@[\w.-]+\/video\/\d+/);
   if (!match) return null;
-  const vtMatch = text.match(/https?:\/\/vt\.tiktok\.com\/[A-Za-z0-9]+\/?/);
   return { platform: "tiktok", url: match[0] };
 }
 
 function extractTikTokShortLink(text) {
-  // TikTok's share sheet often gives a vt.tiktok.com short link instead of the full URL.
   const match = text.match(/https?:\/\/vt\.tiktok\.com\/[A-Za-z0-9]+\/?/);
   if (!match) return null;
   return { platform: "tiktok", url: match[0] };
@@ -94,18 +92,6 @@ function extractShareInfo(text) {
     extractTikTokShortLink(text) ||
     null
   );
-}
-
-  // Playlist-only link (no specific video) - fall back to opening the playlist itself.
-  const playlistMatch = text.match(/https?:\/\/(?:www\.)?youtube\.com\/playlist\?[^\s]+/);
-  if (playlistMatch) {
-    const url = new URL(playlistMatch[0]);
-    const list = url.searchParams.get("list");
-    if (!list) return null;
-    return { videoId: null, list, index: null, t: null, playlistOnly: true };
-  }
-
-  return null;
 }
 
 async function fetchTitle(videoId) {
@@ -127,7 +113,7 @@ async function handleShare(config, info) {
   const app = document.getElementById("app");
   app.innerHTML = `<div id="status">Sending...</div>`;
 
-    let title;
+  let title;
   if (info.platform === "youtube" && info.videoId) {
     title = await fetchTitle(info.videoId);
   } else if (info.platform === "youtube" && info.playlistOnly) {
@@ -139,8 +125,9 @@ async function handleShare(config, info) {
   } else {
     title = "Shared content";
   }
+
   const entry = { ...info, title, ts: Date.now() };
-  
+
   try {
     const res = await fetch(entryUrl(config), {
       method: "PUT",
@@ -148,7 +135,7 @@ async function handleShare(config, info) {
       body: JSON.stringify(entry),
     });
     if (!res.ok) throw new Error("write failed");
-    document.getElementById("status").textContent = "Sent! Closing Now...";
+    document.getElementById("status").textContent = "Sent! Closing...";
     setTimeout(() => window.close(), 800);
   } catch (e) {
     document.getElementById("status").textContent =
@@ -159,7 +146,7 @@ async function handleShare(config, info) {
 function renderSettings(existing) {
   const app = document.getElementById("app");
   app.innerHTML = `
-    <h1>Send to Desktop Setup</h1>
+    <h1>ScrollBeam - Setup</h1>
     <button id="scanBtn">Scan QR code from desktop</button>
     <video id="preview" style="width:100%;border-radius:8px;margin-top:10px;display:none;"></video>
     <canvas id="canvas" style="display:none;"></canvas>
@@ -282,8 +269,8 @@ function switchCamera() {
 function renderHome(config) {
   const app = document.getElementById("app");
   app.innerHTML = `
-    <h1>Send to Desktop</h1>
-    <div id="status">Ready. Share a YouTube video to this app from the Share menu.</div>
+    <h1>ScrollBeam</h1>
+    <div id="status">Ready. Share a YouTube, Instagram, or TikTok link to this app from the Share menu.</div>
     <a class="edit" href="#" id="editLink">Edit settings</a>
   `;
   document.getElementById("editLink").addEventListener("click", (e) => {
@@ -302,13 +289,13 @@ function boot() {
     return;
   }
 
-    if (sharedText) {
+  if (sharedText) {
     const info = extractShareInfo(sharedText);
     if (info) {
       handleShare(config, info);
     } else {
-            document.getElementById("app").innerHTML =
-        `<div id="status">That didn't look like a YouTube link.</div>`;
+      document.getElementById("app").innerHTML =
+        `<div id="status">That didn't look like a YouTube, Instagram, or TikTok link.</div>`;
     }
   } else {
     renderHome(config);
