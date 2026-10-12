@@ -33,6 +33,9 @@ function isExpired(entry, expiryHours) {
 }
 
 function buildWatchUrl(entry) {
+  if (entry.platform === "instagram" || entry.platform === "tiktok") {
+    return entry.url;
+  }
   if (entry.playlistOnly && entry.list) {
     return `https://www.youtube.com/playlist?list=${encodeURIComponent(entry.list)}`;
   }

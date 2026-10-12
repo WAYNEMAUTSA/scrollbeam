@@ -1,6 +1,6 @@
 {
-  "name": "Send to Desktop",
-  "short_name": "SendToDesktop",
+  "name": "ScrollBeam",
+  "short_name": "ScrollBeam",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f0f0f",
@@ -12,10 +12,6 @@
   "share_target": {
     "action": "./index.html",
     "method": "GET",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url"
-    }
+    "params": { "title": "title", "text": "text", "url": "url" }
   }
 }

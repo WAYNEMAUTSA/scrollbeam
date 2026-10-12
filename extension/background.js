@@ -89,8 +89,8 @@ function notify(entry) {
   chrome.notifications.create(NOTIFICATION_ID, {
     type: "basic",
     iconUrl: "icons/icon128.png",
-    title: "Continue watching on this device?",
-    message: entry.title || "A video",
+    title: "Continue on this device?",
+    message: entry.title || "Shared content",
     buttons: [{ title: "Switch here" }],
     priority: 2,
     requireInteraction: true,

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "YouTube Continue Watching",
-  "version": "1.0.0",
-  "description": "Get a switch-to-this-device prompt when you're watching YouTube on your phone.",
+  "name": "ScrollBeam",
+  "version": "2.0.0",
+  "description": "Continue watching or scrolling on your desktop, right where you left off on your phone. YouTube, Instagram, TikTok.",
   "permissions": ["storage", "notifications", "alarms", "offscreen"],
   "host_permissions": ["https://*.firebaseio.com/*"],
   "background": { "service_worker": "background.js" },
