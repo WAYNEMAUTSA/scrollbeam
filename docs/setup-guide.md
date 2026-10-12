@@ -69,7 +69,7 @@ A QR code will appear once you've saved - that's what you'll scan from your phon
 ## Part 3: Install the phone app (Android)
 
 1. On your phone, open Chrome and go to:
-   https://YOUR-USERNAME.github.io/yt-handoff/
+   https://YOUR-USERNAME.github.io/yt-handoff/sender
 2. Tap the menu (three dots) -> Add to Home screen (or Install app, if offered) -> confirm.
 3. Open the app from your home screen.
 4. Tap "Scan QR code from desktop", allow camera access, and point it at the QR code from Part 2.
