@@ -33,6 +33,10 @@ function isExpired(entry, expiryHours) {
 }
 
 function buildWatchUrl(entry) {
+  if (entry.playlistOnly && entry.list) {
+    return `https://www.youtube.com/playlist?list=${encodeURIComponent(entry.list)}`;
+  }
+
   const params = new URLSearchParams();
   if (entry.list) {
     params.set("list", entry.list);

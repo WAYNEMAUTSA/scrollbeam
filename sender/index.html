@@ -32,28 +32,39 @@ function saveConfig(cfg) {
 }
 
 function extractYoutubeInfo(text) {
-  const match = text.match(/https?:\/\/(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/))[^\s]+/);
-  if (!match) return null;
-  const url = new URL(match[0]);
+  const watchMatch = text.match(/https?:\/\/(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/))[^\s]+/);
+  if (watchMatch) {
+    const url = new URL(watchMatch[0]);
+    let videoId = null;
+    if (url.hostname.includes("youtu.be")) {
+      videoId = url.pathname.slice(1).split("/")[0];
+    } else if (url.pathname.includes("/shorts/")) {
+      videoId = url.pathname.split("/shorts/")[1];
+    } else {
+      videoId = url.searchParams.get("v");
+    }
+    if (!videoId) return null;
 
-  let videoId = null;
-  if (url.hostname.includes("youtu.be")) {
-    videoId = url.pathname.slice(1).split("/")[0];
-  } else if (url.pathname.includes("/shorts/")) {
-    videoId = url.pathname.split("/shorts/")[1];
-  } else {
-    videoId = url.searchParams.get("v");
+    const list = url.searchParams.get("list") || null;
+    const indexParam = url.searchParams.get("index");
+    const index = indexParam ? Math.max(0, parseInt(indexParam, 10) - 1) : null;
+
+    let t = url.searchParams.get("t");
+    if (t) t = parseInt(t.replace("s", ""), 10);
+
+    return { videoId, list, index, t: t || null };
   }
-  if (!videoId) return null;
 
-  const list = url.searchParams.get("list") || null;
-  const indexParam = url.searchParams.get("index");
-  const index = indexParam ? Math.max(0, parseInt(indexParam, 10) - 1) : null;
+  // Playlist-only link (no specific video) - fall back to opening the playlist itself.
+  const playlistMatch = text.match(/https?:\/\/(?:www\.)?youtube\.com\/playlist\?[^\s]+/);
+  if (playlistMatch) {
+    const url = new URL(playlistMatch[0]);
+    const list = url.searchParams.get("list");
+    if (!list) return null;
+    return { videoId: null, list, index: null, t: null, playlistOnly: true };
+  }
 
-  let t = url.searchParams.get("t");
-  if (t) t = parseInt(t.replace("s", ""), 10);
-
-  return { videoId, list, index, t: t || null };
+  return null;
 }
 
 async function fetchTitle(videoId) {
