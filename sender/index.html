@@ -86,9 +86,12 @@ async function handleShare(config, info) {
   const app = document.getElementById("app");
   app.innerHTML = `<div id="status">Sending...</div>`;
 
-  const title = await fetchTitle(info.videoId);
-  const entry = { ...info, title, ts: Date.now() };
+  const title = info.videoId
+    ? await fetchTitle(info.videoId)
+    : (info.playlistOnly ? "Shared playlist" : "Shared video");
 
+  const entry = { ...info, title, ts: Date.now() };
+  
   try {
     const res = await fetch(entryUrl(config), {
       method: "PUT",
